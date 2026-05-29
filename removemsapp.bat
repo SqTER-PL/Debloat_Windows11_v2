@@ -1,5 +1,5 @@
 @echo off
-:: V1.27
+:: V1.25
 
 :: Release under the GNU GPL V3
 
@@ -96,16 +96,9 @@ rem check if Winget is already installed
 FOR /F %%g IN ('winget -v') do (SET version=%%g)
 echo %version%
 SET "result=%version:~1%"
-SET minwingetversionA=1
-SET minwingetversionB=11
-for /f "tokens=1,2 delims=." %%a in ("%result%") do (
-    set "resultA=%%a"
-    set "resultB=%%b"
-)
-if %resultA% LEQ %minwingetversionA% (
-	if %resultB% LSS %minwingetversionB% (
-		call :InstallWinget
-	)
+SET minwingetversion=1.12
+if %result% LEQ %minwingetversion% (
+	call :InstallWinget
 )
 
 cls & echo ======================
@@ -141,12 +134,6 @@ powershell "get-appxpackage -allusers Microsoft.OutlookForWindows | Remove-AppxP
 echo installing the patched one (Errors are bad now)
 powershell add-appxpackage -register "'%appdata%\NewOutlook\AppxManifest.xml'"
 echo done !
-
-:: Remove Office 365 Preinstalled. Setup.exe is part of officedeploymenttool_17830-20162.exe
-Echo Removing Office 365 Preinstalled
-start /Wait "" /b "%~dp0setup.exe" /configure "%~dp0uninstall.xml"
-echo done !
-ping 127.0.0.1 -n 3 >nul 2>&1
 
 cls & echo ======================
 echo Remove packages segond stage. Please Wait...
